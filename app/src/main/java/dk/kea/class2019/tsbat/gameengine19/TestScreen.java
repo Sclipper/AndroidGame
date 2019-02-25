@@ -3,9 +3,11 @@ package dk.kea.class2019.tsbat.gameengine19;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 
+import java.util.Random;
+
 public class TestScreen extends Screen
 {
-    public TestScreen(GameEngine gameEngine, int x, int y, Bitmap bitmap)
+    public TestScreen(GameEngine gameEngine)
     {
         super(gameEngine);
         bitmap = gameEngine.loadBimap("bob.png");
@@ -14,6 +16,8 @@ public class TestScreen extends Screen
     int x = 0;
     int y = 0;
     Bitmap bitmap;
+    Random rand = new Random();
+    int color = 0;
 
     @Override
     public void update(float deltaTime)
@@ -23,8 +27,9 @@ public class TestScreen extends Screen
             x = gameEngine.getTouchX(0);
             y = gameEngine.getTouchX(0);
         }
-        gameEngine.clearFrameBuffer(Color.BLUE);
-        gameEngine.drawBitmap(bitmap, x, y);
+        color = rand.nextInt();
+        gameEngine.clearFrameBuffer(color);
+//        gameEngine.drawBitmap(bitmap, x, y);
     }
 
     @Override
