@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Rect;
+import android.support.constraint.solver.widgets.Rectangle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,7 +20,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class GameEngine extends AppCompatActivity implements Runnable {
+public abstract class GameEngine extends AppCompatActivity implements Runnable, TouchHandler {
 
     private Thread mainLoopThread;
     private State state = State.Paused;
@@ -27,6 +29,8 @@ public abstract class GameEngine extends AppCompatActivity implements Runnable {
     private SurfaceHolder surfaceHolder;
     private Canvas canvas = null;
     private Screen screen = null;
+    private Bitmap offscreenSurface;
+
 
     public abstract Screen createStartScreen();
 
@@ -44,8 +48,33 @@ public abstract class GameEngine extends AppCompatActivity implements Runnable {
         setContentView(surfaceView);
         surfaceHolder = surfaceView.getHolder();
         screen = createStartScreen();
+        if(surfaceView.getWidth() > surfaceView.getHeight())
+        {
+            setOffscreenSurface(480, 320);
+        }
+        else
+        {
+            setOffscreenSurface(320, 480);
+        }
+
     }
 
+    public void setOffscreenSurface(int width, int heigth)
+    {
+        if(offscreenSurface != null) offscreenSurface.recycle();
+        offscreenSurface = Bitmap.createBitmap(width, heigth, Bitmap.Config.RGB_565);
+        canvas = new Canvas(offscreenSurface);
+    }
+
+    public int getFramebufferWidth()
+    {
+        return offscreenSurface.getWidth();
+    }
+
+    public int getFramebufferHeight()
+    {
+        return offscreenSurface.getHeight();
+    }
     public Bitmap loadBimap(String fileName)
     {
         InputStream in = null;
@@ -82,7 +111,7 @@ public abstract class GameEngine extends AppCompatActivity implements Runnable {
 
     public void clearFrameBuffer(int color)
     {
-        canvas.drawColor(Color.BLUE);
+        canvas.drawColor(color);
     }
 
     public void drawBitmap(Bitmap bitmap, int x, int y)
@@ -93,11 +122,27 @@ public abstract class GameEngine extends AppCompatActivity implements Runnable {
         }
     }
 
+    Rect src = new Rect();
+    Rect dst = new Rect();
+    public void drawBitmap(Bitmap bitmap, int x, int y, int srcX, int srcY, int srcWidth, int srcHeight)
+    {
+        if(canvas == null) return;
+
+        src.left = srcX;
+        src.top = srcY;
+        src.right = srcX + srcWidth;
+        src.bottom = srcY + srcHeight;
+
+        dst.left = x;
+        dst.top = y;
+        dst.right = x + srcWidth;
+        dst.bottom = y + srcHeight;
+
+        canvas.drawBitmap(bitmap, src, dst, null);
+    }
+
     public boolean isTouchDown(int pointer)
     {
-
-
-        // Todo: Change return statement
         return false;
     }
 
@@ -146,10 +191,22 @@ public abstract class GameEngine extends AppCompatActivity implements Runnable {
                        continue;
                    }
                     Log.d("Game Engine", "is Running After continue");
-                    canvas = surfaceHolder.lockCanvas();
+                    Canvas canvas = surfaceHolder.lockCanvas();
                    // drawing happens here
 //                    canvas.drawColor(Color.BLUE);
                     if(screen != null) screen.update(0);
+                    src.left = 0;
+                    src.top = 0;
+                    src.right = offscreenSurface.getWidth();
+                    src.bottom = offscreenSurface.getHeight();
+
+                    dst.left = 0;
+                    dst.top = 0;
+                    dst.right = surfaceView.getWidth();
+                    dst.bottom = surfaceView.getHeight();
+
+                    canvas.drawBitmap(offscreenSurface, src, dst, null);
+
                     surfaceHolder.unlockCanvasAndPost(canvas);
                 }
 

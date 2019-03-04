@@ -16,8 +16,6 @@ public class TestScreen extends Screen
     int x = 0;
     int y = 0;
     Bitmap bitmap;
-    Random rand = new Random();
-    int color = 0;
 
     @Override
     public void update(float deltaTime)
@@ -27,9 +25,9 @@ public class TestScreen extends Screen
             x = gameEngine.getTouchX(0);
             y = gameEngine.getTouchX(0);
         }
-        color = rand.nextInt();
-        gameEngine.clearFrameBuffer(color);
-//        gameEngine.drawBitmap(bitmap, x, y);
+        gameEngine.clearFrameBuffer(Color.BLUE);
+        gameEngine.drawBitmap(bitmap, 0, 0);
+        gameEngine.drawBitmap(bitmap, 500, 500, 0, 0, 64, 64);
     }
 
     @Override
