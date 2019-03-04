@@ -7,15 +7,15 @@ import java.util.Random;
 
 public class TestScreen extends Screen
 {
+    int x = 0;
+    int y = 0;
+    Bitmap bitmap;
+
     public TestScreen(GameEngine gameEngine)
     {
         super(gameEngine);
         bitmap = gameEngine.loadBimap("bob.png");
     }
-
-    int x = 0;
-    int y = 0;
-    Bitmap bitmap;
 
     @Override
     public void update(float deltaTime)
@@ -23,10 +23,10 @@ public class TestScreen extends Screen
         if(gameEngine.isTouchDown(0))
         {
             x = gameEngine.getTouchX(0);
-            y = gameEngine.getTouchX(0);
+            y = gameEngine.getTouchY(0);
         }
-        gameEngine.clearFrameBuffer(Color.BLUE);
-        gameEngine.drawBitmap(bitmap, 0, 0);
+        gameEngine.clearFrameBuffer(Color.RED);
+        gameEngine.drawBitmap(bitmap, x, y);
         gameEngine.drawBitmap(bitmap, 500, 500, 0, 0, 64, 64);
     }
 
