@@ -14,7 +14,7 @@ public class TestScreen extends Screen
     public TestScreen(GameEngine gameEngine)
     {
         super(gameEngine);
-        bitmap = gameEngine.loadBimap("bob.png");
+        bitmap = gameEngine.loadBimap("bob.jpg");
     }
 
     @Override
@@ -25,14 +25,12 @@ public class TestScreen extends Screen
 //            x = gameEngine.getTouchX(0);
 //            y = gameEngine.getTouchY(0);
 //        }
-
         float x = gameEngine.getAccelerometer()[0];
         float y = gameEngine.getAccelerometer()[1];
-        x = gameEngine.getFramebufferWidth()/2 + ((x/10) * gameEngine.getFramebufferWidth()/2);
-        y = gameEngine.getFramebufferHeight()/2 + ((y/10) * gameEngine.getFramebufferHeight()/2);
+        x = gameEngine.getFramebufferWidth() / 2 + ((x/10) * gameEngine.getFramebufferWidth() /2);
+        y = gameEngine.getFramebufferHeight() / 2 + ((y/10) * gameEngine.getFramebufferHeight() /2);
 
-
-        gameEngine.clearFrameBuffer(Color.PURPLE);
+        gameEngine.clearFrameBuffer(Color.RED);
         gameEngine.drawBitmap(bitmap, (int)x - 64, (int)y - 64);
         gameEngine.drawBitmap(bitmap, 500, 500, 0, 0, 64, 64);
     }
