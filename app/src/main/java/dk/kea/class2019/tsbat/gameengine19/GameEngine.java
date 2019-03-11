@@ -181,6 +181,19 @@ public abstract class GameEngine extends AppCompatActivity implements Runnable, 
         }
     }
 
+    public Music loadMusic(String fileName)
+    {
+        try
+        {
+            AssetFileDescriptor assetFileDescriptor = getAssets().openFd(fileName);
+            return new Music(assetFileDescriptor);
+        }
+        catch(IOException e)
+        {
+            throw new RuntimeException("GameEngine: Could not load Music FIle" + fileName);
+        }
+    }
+
     public boolean isTouchDown(int pointer)
     {
 
