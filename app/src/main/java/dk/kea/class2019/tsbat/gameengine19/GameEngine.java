@@ -45,8 +45,7 @@ public abstract class GameEngine extends AppCompatActivity implements Runnable, 
     private List<TouchEvent> touchEventBuffer = new ArrayList<>();
     private List<TouchEvent> touchEventCopied = new ArrayList<>();
     private float[] accelerometer = new float[3];
-    private SoundPool soundPool;
-
+    private SoundPool soundPool = new SoundPool.Builder().setMaxStreams(20).build();
 
     public abstract Screen createStartScreen();
 
@@ -80,7 +79,8 @@ public abstract class GameEngine extends AppCompatActivity implements Runnable, 
             manager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_GAME);
         }
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        this.soundPool = new SoundPool(20, AudioManager.STREAM_MUSIC, 0);
+//        this.soundPool = new SoundPool(20, AudioManager.STREAM_MUSIC, 0);
+
     }
 
     public void setOffscreenSurface(int width, int height)
@@ -170,6 +170,8 @@ public abstract class GameEngine extends AppCompatActivity implements Runnable, 
         try
         {
             AssetFileDescriptor assetFileDescriptor = getAssets().openFd(fileName);
+            if (assetFileDescriptor == null) throw new RuntimeException("GOD DAMN IT, KAREN!");
+            if (soundPool == null) throw new RuntimeException("JESUS FUCKING CHRIST");
             int soundId = soundPool.load(assetFileDescriptor, 0);
             return new Sound(soundPool, soundId);
         }
