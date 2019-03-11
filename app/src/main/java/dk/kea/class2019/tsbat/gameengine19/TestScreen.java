@@ -2,13 +2,12 @@ package dk.kea.class2019.tsbat.gameengine19;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
-
-import java.util.Random;
+import android.util.Log;
 
 public class TestScreen extends Screen
 {
-    int x = 0;
-    int y = 240;
+    float x = 0;
+    float y = 240;
     Bitmap bitmap;
     Sound sound;
     Music backgroundMuisc;
@@ -27,9 +26,10 @@ public class TestScreen extends Screen
     @Override
     public void update(float deltaTime)
     {
-        gameEngine.clearFrameBuffer(Color.RED);
+//        Log.d("TestScree", "FPS " + gameEngine.getFramesPerSecond());
+        gameEngine.clearFrameBuffer(Color.GREEN);
 
-        x += 25;
+        x = x + 50 * deltaTime;
         if (x > 320 + bitmap.getWidth()) x = 0 - bitmap.getWidth();
 
         if(gameEngine.isTouchDown(0))

@@ -5,20 +5,16 @@ import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
-import android.hardware.SensorEventCallback;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.SoundPool;
-import android.support.constraint.solver.widgets.Rectangle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.Window;
@@ -46,6 +42,9 @@ public abstract class GameEngine extends AppCompatActivity implements Runnable, 
     private List<TouchEvent> touchEventCopied = new ArrayList<>();
     private float[] accelerometer = new float[3];
     private SoundPool soundPool = new SoundPool.Builder().setMaxStreams(20).build();
+    private int framesPerSevond = 0;
+    long currentTime = 0;
+    long lastTime = 0;
 
     public abstract Screen createStartScreen();
 
@@ -227,8 +226,41 @@ public abstract class GameEngine extends AppCompatActivity implements Runnable, 
         System.arraycopy(event.values, 0, accelerometer, 0 , 3);
     }
 
+    private void fillEvent()
+    {
+        synchronized (touchEventBuffer)
+        {
+            for (int i =0 ; i < touchEventBuffer.size(); i++)
+            {
+                touchEventCopied.add(touchEventBuffer.get(i));
+            }
+            touchEventBuffer.clear();
+        }
+    }
+
+    private void freeEvents()
+    {
+        synchronized (touchEventCopied)
+        {
+            int stop = touchEventCopied.size();
+            for (int i=0; i < stop; i++)
+            {
+                touchEventPool.free(touchEventCopied.get(i));
+            }
+            touchEventCopied.clear(); // !!!!!
+        }
+    }
+
+    public int getFramesPerSecond()
+    {
+        return framesPerSevond;
+    }
+
     public void run()
     {
+        int frames = 0;
+        long startTime = System.nanoTime(); //Delete after test
+
         while(true)
         {
             synchronized(stateChanges)
@@ -256,16 +288,17 @@ public abstract class GameEngine extends AppCompatActivity implements Runnable, 
 
                 if(state == State.Running)
                 {
-                    Log.d("Game Engine", "is Running");
                    if (!surfaceHolder.getSurface().isValid())
                    {
                        continue;
                    }
-                    Log.d("Game Engine", "is Running After continue");
                     Canvas canvas = surfaceHolder.lockCanvas();
                    // drawing happens here
 //                    canvas.drawColor(Color.BLUE);
-                    if(screen != null) screen.update(0);
+                    currentTime = System.nanoTime();
+                    if(screen != null) screen.update((currentTime - lastTime)/1000000000.0f);
+                    lastTime = currentTime;
+                    freeEvents();
                     src.left = 0;
                     src.top = 0;
                     src.right = offscreenSurface.getWidth();
@@ -280,7 +313,14 @@ public abstract class GameEngine extends AppCompatActivity implements Runnable, 
 
                     surfaceHolder.unlockCanvasAndPost(canvas);
                 }
-
+//                frames++; // I have jsut drawn a new frame
+//                //Delete after test
+//                if(System.nanoTime() - startTime > 1000000000)
+//                {
+//                    framesPerSevond = frames;
+//                    frames = 0;
+//                    startTime = System.nanoTime();
+//                }
             }  //end of synchronised
         }  // end of while
     }
