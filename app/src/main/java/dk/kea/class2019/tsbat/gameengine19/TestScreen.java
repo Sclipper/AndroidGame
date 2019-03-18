@@ -2,7 +2,6 @@ package dk.kea.class2019.tsbat.gameengine19;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.util.Log;
 
 public class TestScreen extends Screen
 {
@@ -16,7 +15,7 @@ public class TestScreen extends Screen
     public TestScreen(GameEngine gameEngine)
     {
         super(gameEngine);
-        bitmap = gameEngine.loadBimap("bob.png");
+        bitmap = gameEngine.loadBitmap("bob.png");
         sound = gameEngine.loadSound("blocksplosion.wav");
         backgroundMuisc = gameEngine.loadMusic("music.ogg");
         isPlaying = true;

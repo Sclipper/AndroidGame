@@ -48,7 +48,11 @@ public abstract class GameEngine extends AppCompatActivity implements Runnable, 
 
     public abstract Screen createStartScreen();
 
-    public void setScreen(Screen screen){}
+    public void setScreen(Screen screen)
+    {
+        if (this.screen != null) this.screen.dispose();
+        this.screen = screen;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +102,7 @@ public abstract class GameEngine extends AppCompatActivity implements Runnable, 
     {
         return offscreenSurface.getHeight();
     }
-    public Bitmap loadBimap(String fileName)
+    public Bitmap loadBitmap(String fileName)
     {
         InputStream in = null;
         Bitmap bitmap = null;
@@ -108,13 +112,13 @@ public abstract class GameEngine extends AppCompatActivity implements Runnable, 
             bitmap = BitmapFactory.decodeStream(in);
             if(bitmap == null)
             {
-                throw new RuntimeException("Couldnt load bitmap from file" + fileName);
+                throw new RuntimeException("Couldn't load bitmap from file" + fileName);
             }
             return bitmap;
         }
         catch (IOException ioe)
         {
-            throw new RuntimeException("Couldnt load bitmap from assests" + fileName);
+            throw new RuntimeException("Couldn't load bitmap from assets" + fileName);
         }
         finally
         {
