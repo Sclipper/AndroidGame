@@ -7,6 +7,6 @@ public class Ball
     public float x = 160 - 7.5f;
     public float y = 240;
     public float vx = 100; //velocity x
-    public float vy = 10; //velocity y
+    public float vy = 100; //velocity y
 
 }

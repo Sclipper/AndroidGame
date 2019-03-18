@@ -1,5 +1,8 @@
 package dk.kea.class2019.tsbat.gameengine19;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class World
 {
     public static float MIN_X = 0;
@@ -9,6 +12,11 @@ public class World
 
     Ball ball = new Ball();
     Paddle paddle = new Paddle();
+    List<Block> blocks = new ArrayList<>();
+
+    public World() {
+        generateBlocks();
+    }
 
     public void update(float deltaTime, float accelX, boolean isTouch, int touchX)
     {
@@ -33,9 +41,9 @@ public class World
             ball.x = MAX_X - Ball.WIDTH;
         }
 
-        if (ball.y > MIN_Y)
+        if (ball.y < MIN_Y)
         {
-            ball.y = - ball.vy;
+            ball.vy = - ball.vy;
             ball.y = MIN_Y;
         }
         if (ball.y > MAX_Y - Ball.HEIGHT)
@@ -56,6 +64,18 @@ public class World
         if ((ball.x >= paddle.x) && (ball.x+Ball.WIDTH < paddle.x + Paddle.WIDTH) && (ball.y + Ball.HEIGHT > paddle.y))
         {
             ball.vy = -ball.vy;
+        }
+    }
+
+    private void generateBlocks()
+    {
+        blocks.clear();
+        for(int y = 60, type = 0; y < 62 + 8 * (Block.HEIGHT + 4); y = y + (int)Block.HEIGHT, type++)
+        {
+            for(int x = 20; x<320-Block.WIDTH; x = x + (int)Block.WIDTH + 2)
+            {
+                blocks.add(new Block(x, y, type));
+            }
         }
     }
 }
